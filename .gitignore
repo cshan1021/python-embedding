@@ -1,0 +1,11 @@
+# 환경파일
+.idea/
+.vscode/
+.venv/
+
+# 캐시 파일
+.pytest_cache/
+__pycache__/
+
+# 기타파일
+data/qdrant
