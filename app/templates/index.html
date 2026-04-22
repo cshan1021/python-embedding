@@ -1,1 +1,72 @@
-index
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Embedding Search Test</title>
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', path='/favicon.ico') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Embedding Search Test</h1>
+        <form id="searchForm">
+            <div class="form-group form-group-horizontal">
+                <div class="collection-group">
+                    <label for="collectionSelect">Collection:</label>
+                    <select id="collectionSelect" name="collectionSelect">
+                        <option value="block_ingredients">block_ingredients</option>
+                        <option value="block_products">block_products</option>
+                    </select>
+                </div>
+                <button type="submit">Search</button>
+            </div>
+            <div class="form-group">
+                <label for="queryText">Query Text:</label>
+                <textarea id="queryText" name="queryText" rows="20" cols="50" maxlength="200" placeholder="Enter query text..."></textarea>
+                <textarea id="result" rows="20" cols="50" readonly placeholder="Result will be displayed here..."></textarea>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('searchForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const collectionSelect = document.getElementById('collectionSelect').value;
+            const queryText = document.getElementById('queryText').value;
+            const resultElement = document.getElementById('result');
+
+            const formData = new FormData();
+            formData.append('collectionSelect', collectionSelect);
+            formData.append('queryText', queryText);
+
+            resultElement.value = 'Searching...';
+
+            try {
+                const response = await fetch('/api/v1/embedding_search', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                if (data.status === 'success') {
+                    // JSON.stringify to pretty-print the JSON object
+                    resultElement.value = JSON.stringify(data.data, null, 2);
+                } else {
+                    resultElement.value = `Error: ${data.message || 'Unknown error'}`;
+                }
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                resultElement.value = `An error occurred: ${error.message}`;
+            }
+        });
+    </script>
+</body>
+</html>
+

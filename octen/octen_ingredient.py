@@ -7,7 +7,6 @@ from qdrant_client import QdrantClient, models
 
 # 1. 설정
 excel_file_path = "./data/excel/2026.04.22_block_ingredients.xls"
-client = QdrantClient(path=settings.QDRANT_PATH)
 collection_name = settings.QDRANT_COLLECTION_BLOCK_INGREDIENTS
 
 # dense: Octen-Embedding-4B 모델 사용
@@ -37,6 +36,8 @@ def get_sparse_embedding(text):
 # Qdrant 임베딩 입력
 def upsert_to_qdrant():
     try:
+        client = QdrantClient(path=settings.QDRANT_PATH)
+
         if not client.collection_exists(collection_name):
             # Octen-Embedding-4B size=2560
             client.create_collection(
@@ -97,6 +98,8 @@ def upsert_to_qdrant():
 # Qdrant 임베딩 조회
 def search_from_qdrant(query_text, limit=5):
     try:
+        client = QdrantClient(path=settings.QDRANT_PATH)
+        
         query_dense = get_dense_embedding(query_text)
         query_sparse = get_sparse_embedding(query_text)
 
@@ -113,7 +116,19 @@ def search_from_qdrant(query_text, limit=5):
             ),
             limit=limit
         )
-        return results.points
+        formatted_data = [
+            {
+                "id": p.id,
+                "score": p.score,
+                "status_name": p.payload.get("status_name"),
+                "ko_name": p.payload.get("ko_name"),
+                "en_name": p.payload.get("en_name"),
+                "etc_name": p.payload.get("etc_name"),
+                "status_date": p.payload.get("status_date")
+            }
+            for p in results.points
+        ]
+        return formatted_data
     
     finally:
         client.close()
