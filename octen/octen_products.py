@@ -136,7 +136,5 @@ def search_from_qdrant(query_text, limit=5):
     finally:
         client.close()
 
-# embedding
-upsert_to_qdrant()
-# 개별실행
-# python -m octen.octen_products
+# embedding 실행
+# python -c "from octen.octen_products import upsert_to_qdrant; upsert_to_qdrant()"
