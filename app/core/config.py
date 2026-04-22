@@ -16,6 +16,7 @@ class Settings(BaseSettings):
     # Qdrant
     QDRANT_PATH: str = "./data/qdrant"
     QDRANT_COLLECTION_BLOCK_INGREDIENTS: str = "block_ingredients"
+    QDRANT_COLLECTION_BLOCK_PRODUCTS: str = "block_products"
 
     # 환경 변수
     PROJECT_NAME: str = "Python LLM Serving"

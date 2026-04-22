@@ -6,9 +6,9 @@ from collections import Counter
 from qdrant_client import QdrantClient, models
 
 # 1. 설정
-excel_file_path = "./data/excel/2026.04.22_block_ingredients.xls"
+excel_file_path = "./data/excel/2026.04.22_block_products.xls"
 client = QdrantClient(path=settings.QDRANT_PATH)
-collection_name = settings.QDRANT_COLLECTION_BLOCK_INGREDIENTS
+collection_name = settings.QDRANT_COLLECTION_BLOCK_PRODUCTS
 
 # dense: Octen-Embedding-4B 모델 사용
 def get_dense_embedding(text):
@@ -52,14 +52,15 @@ def upsert_to_qdrant():
         points = []
         for idx, row in df.iterrows():   
             try:
-                status_name = row['구분']
-                ko_name = row['원료ㆍ성분명(한글)']
-                en_name = row['원료ㆍ성분명(영문)']
-                etc_name = row['기타명칭']
-                status_date = row['지정ㆍ해제일']
+                prod_name = row['제품명']
+                mfg_name = row['제조사명']
+                made_in = row['제조국가']
+                det_ingr = row['검출성분']
+                det_ingr_ko = row['검출성분(국문)']
+                reg_date = row['등록일']
                 
-                point_id = str(uuid.uuid5(uuid.NAMESPACE_DNS, f"{ko_name}{en_name}"))
-                names = [name for name in [ko_name, en_name, etc_name] if name]
+                point_id = str(uuid.uuid5(uuid.NAMESPACE_DNS, f"{prod_name}{mfg_name}"))
+                names = [name for name in [prod_name, mfg_name, det_ingr_ko] if name]
                 combined_text = ", ".join(names).strip()
                 point_dense_vector = get_dense_embedding(combined_text)
                 point_sparse_vector = get_sparse_embedding(combined_text)
@@ -71,11 +72,12 @@ def upsert_to_qdrant():
                         "sparse": point_sparse_vector
                     },
                     payload= {
-                        "status_name": status_name,
-                        "ko_name": ko_name,
-                        "en_name": en_name,
-                        "etc_name": etc_name,
-                        "status_date": status_date
+                        "prod_name": prod_name,
+                        "mfg_name": mfg_name,
+                        "made_in": made_in,
+                        "det_ingr": det_ingr,
+                        "det_ingr_ko": det_ingr_ko,
+                        "reg_date": reg_date
                     }
                 ))
                 
@@ -119,6 +121,6 @@ def search_from_qdrant(query_text, limit=5):
         client.close()
 
 # embedding
-# upsert_to_qdrant()
+upsert_to_qdrant()
 # 개별실행
-# python -m octen.octen_ingredient
+# python -m octen.octen_products
