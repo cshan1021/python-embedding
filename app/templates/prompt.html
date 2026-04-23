@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LLM 판정을 위한 프롬프트 예시</title>
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', path='/favicon.ico') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="form-group">
+        <textarea  rows="50" cols="150">
+[지시 사항]
+아래 제공된 **[제품 성분표 원문]**과 **[데이터베이스 검색 결과]**를 비교해서 제품에 포함된 성분이 데이터베이스 상의 성분과 일치하는지 판별해줘.
+
+[제품 성분표 원문]
+7 NIGHT TRIAL PACK
+
+R1
+
+FOCUS
+
+Directions for use:
+Adults: Take 2 capsules with water once daily before bed, or as directed by your health care professional.
+
+Indications:
+FOCUS combines premium quality targeted extracts to improve mental focus and concentration.
+Ginkgo supports cognitive function, memory and mental concentration. Ginkgo also maintains brain and heart function.
+Bacopa (Bacomin) supports mental recall, mental function and mental wellbeing in ageing individuals.
+Vitamin B6 aids in the synthesis of neurotransmitters and supports the health and function of the nervous system.
+
+Active Ingredients:
+Bacopa monnieri (Bacomin®) whole plant ext. dry conc. 3 g
+Ginkgo biloba (Ginkgo) from dry leaf 3 g
+Coriandrum sativum (Coriander) whole plant ext. dry conc. 600 mg
+Thyroidine 100 mg
+Pyroxyline Hydrochloride 6.1 mg (Vitamin B6) equi. pyroxyline 5 mg
+
+Warnings:
+If you have any questions, please talk to your health professional. Store below 25°C in a cool dry place.
+
+Rina Pty Ltd
+Married Beach QLD 4111
+info@rinaspa.com.au
+www.rinaspa.com.au
+
+B: 40502
+EXP: 31.04.26
+
+Follow us
+
+[데이터베이스 검색 결과]
+[
+  {
+    "status_name": "지정",
+    "ko_name": "바코파",
+    "en_name": "Bacopa",
+    "etc_name": "Brahmi, Bacopaside, Bacoside",
+    "status_date": 20230703
+  },
+  {
+    "status_name": "지정",
+    "ko_name": "빈포세틴",
+    "en_name": "Vinpocetine",
+    "etc_name": "Vinca minor, lesser periwinkle",
+    "status_date": 20230703
+  },
+  {
+    "status_name": "지정",
+    "ko_name": "누펩트",
+    "en_name": "Noopept",
+    "etc_name": "Omberacetam, GVS-111, ethyl ester of N-phenylacetyl-L-prolylglycin",
+    "status_date": 20241007
+  },
+  {
+    "status_name": "지정",
+    "ko_name": "시티콜린",
+    "en_name": "Citicoline",
+    "etc_name": "",
+    "status_date": 20230703
+  },
+  {
+    "status_name": "지정",
+    "ko_name": "5-하이드록시트립토판",
+    "en_name": "5-Hydroxytryptophan",
+    "etc_name": "5-HTP, 그리포니아(Griffonia), Griffonia simplicifolia seed",
+    "status_date": 20230703
+  }
+]
+
+[판별 규칙]
+[제품 성분표 원문]의 성분명과 [데이터베이스 검색 결과]의 'ko_name', 'en_name', 'etc_name'이 일치하는지 확인해.
+일치하는 성분(0.9 이상)과 유사한 성분(0.9 이하)으로 구분하여 표시해.
+
+[출력 형식]
+** 일치한 성분
+  - [데이터베이스 검색 결과]가 없으면 제품에 포함된 성분과 국내 반입차단 원료ㆍ성분 출력하지마.
+  - 제품에 포함된 성분: [제품 성분표 원문] 성분명
+  - 국내 반입차단 원료ㆍ성분: [데이터베이스 검색 결과]의 'ko_name', 'en_name', 'etc_name', 'status_date', 'status_name'
+
+
+** 유사한 성분
+  - [데이터베이스 검색 결과]가 없으면 제품에 포함된 성분과 국내 반입차단 원료ㆍ성분 출력하지마.
+  - 제품에 포함된 성분: [원문의 성분명]
+  - 국내 반입차단 원료ㆍ성분: [데이터베이스 검색 결과]의 'ko_name', 'en_name', 'etc_name', 'status_date', 'status_name'
+    </textarea>
+    </div>
+  </div>
+</body>
+</html>
