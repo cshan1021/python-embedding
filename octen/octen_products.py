@@ -5,7 +5,7 @@ from app.core.config import settings
 from collections import Counter
 from qdrant_client import QdrantClient, models
 
-# 1. 설정
+# 설정
 excel_file_path = "./data/excel/2026.04.22_block_products.xls"
 collection_name = settings.QDRANT_COLLECTION_BLOCK_PRODUCTS
 
@@ -108,7 +108,7 @@ def search_from_qdrant(query_text, limit=5):
         # limit 조절해서 가중치 부여
         results = client.query_points(
             collection_name = collection_name,
-            prefetch = [ # Prefetch 대신 models.Prefetch 사용
+            prefetch = [
                 models.Prefetch(query=query_dense, using="dense", limit=40, score_threshold=0.5),
                 models.Prefetch(query=query_sparse, using="sparse", limit=10, score_threshold=0.5)
             ],
