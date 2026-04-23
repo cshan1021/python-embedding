@@ -107,8 +107,8 @@ def search_from_qdrant(query_text, limit=5):
         results = client.query_points(
             collection_name = collection_name,
             prefetch = [ # Prefetch 대신 models.Prefetch 사용
-                models.Prefetch(query=query_dense, using="dense", limit=40),
-                models.Prefetch(query=query_sparse, using="sparse", limit=10)
+                models.Prefetch(query=query_dense, using="dense", limit=40, score_threshold=0.5),
+                models.Prefetch(query=query_sparse, using="sparse", limit=10, score_threshold=0.5)
             ],
             # Fusion 타입이 'RRF' 또는 'DBSF' 사용
             query=models.FusionQuery(
